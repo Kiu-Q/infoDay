@@ -8,6 +8,7 @@ pg.init()
 
 w, h = pg.display.Info().current_w, pg.display.Info().current_h
 screen = pg.display.set_mode((w-10,h-50))
+amd = -10
 
 pg.display.set_caption("Ho Fung College Info Day Shooting Game")
 
@@ -73,7 +74,7 @@ with mpHands.Hands(
       
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
-                player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h])
+                player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
                 if enemy.collide(player.pos):
                     enemy = Enemy()
                     score += 1
