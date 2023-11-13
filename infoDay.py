@@ -43,7 +43,7 @@ player = Player()
 enemy = Enemy()
 
 score = 0
-time = 5
+time = 30
 
 mpHands = mp.solutions.hands
 cap = cv2.VideoCapture(0)
@@ -81,7 +81,7 @@ with mpHands.Hands(
         if remaining <= 0:
             run = False
             game_over_text = font.render("Game Over! Final Score: " + str(score), True, (255, 255, 255))
-            screen.blit(game_over_text, (w // 2 - game_over_text.get_w() // 2, w // 2))
+            screen.blit(game_over_text, (w // 2 - 10, h // 2))
  
         pg.display.update()
 
