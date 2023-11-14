@@ -6,8 +6,8 @@ import shelve
 
 pg.init()
 
-w, h = pg.display.Info().current_w, pg.display.Info().current_h
-screen = pg.display.set_mode((w-10,h-50))
+w, h = pg.display.Info().current_w-30, pg.display.Info().current_h-100
+screen = pg.display.set_mode((w,h))
 amd = -10
 BLACK = (0, 0, 0)
 
@@ -59,7 +59,7 @@ while not q:
     
     cnt = 1
     for i in tScores:
-        tsText = font.render("%d. %2d"%(cnt, i), True, BLACK)
+        tsText = font.render("%d.%3d"%(cnt, i), True, BLACK)
         screen.blit(tsText, (w // 2 - tsText.get_width()//2, h // 4+(30+30*cnt)))
         cnt += 1   
     pg.display.update()
@@ -79,7 +79,7 @@ while not q:
     enemy = Enemy()
 
     score = 0
-    time = 5
+    time = 30
 
     mpHands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
@@ -124,7 +124,15 @@ while not q:
                 screen.blit(gText, (w // 2 - gText.get_width()//2, h // 2+30))
                 
             pg.display.update()
-            
+     
+    if score > min(tScores):
+        tScores.append(score)
+        tScores.sort(reverse=True)
+        tScores.pop()
+        with shelve.open("file")  as d:
+            d['tScore'] = tScores
+            d.close()
+        
     press = False
     while not press:
         event = pg.event.wait()            
