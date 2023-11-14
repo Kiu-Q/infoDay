@@ -2,7 +2,7 @@ import pygame as pg
 import random
 import mediapipe as mp
 import cv2
-import os
+import shelve
 
 pg.init()
 
@@ -31,7 +31,7 @@ class Player:
 
 class Enemy:
     def __init__(self):
-        self.pos = [random.randint(w/5, w-w/10), random.randint(h/5, h-h/10)]
+        self.pos = [random.randint(w//5, w-w//10), random.randint(h//5, h-h//10)]
         self.rect = target_image.get_rect()
         self.rect.center = self.pos
         
@@ -41,52 +41,91 @@ class Enemy:
     def collide(self, pos):
         return self.rect.collidepoint(pos)
 
-player = Player()
-enemy = Enemy()
-
-score = 0
-time = 30
-
-mpHands = mp.solutions.hands
-cap = cv2.VideoCapture(0)
-
-with mpHands.Hands(
-    model_complexity=0,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as hands:
+q = False
+while not q:
     
-    start = pg.time.get_ticks()
-    run = True
+    with shelve.open("file")  as d:
+        tScores = d['tScore']
+        
+    screen.fill((255,255,255))
+    font = pg.font.SysFont("Arial", 30)     
     
-    while run:
-        
-        screen.fill((255,255,255))
-        
-        player.draw()
-        enemy.draw()
-        
-        remaining = time - (pg.time.get_ticks() - start) // 1000
-        font = pg.font.SysFont("Arial", 30)
-        
-        screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
-        screen.blit(font.render("Time Remaining: " + str(remaining), True, BLACK), (10, 40))
+    tText = font.render("HFC Info Day Hand Detect Shooting Game ", True, BLACK)
+    sText = font.render("Press <SPACE> to start", True, BLACK)
+    topText = font.render("Top 5 Scores: ", True, BLACK)
+    screen.blit(tText, (w // 2 - tText.get_width()//2, h // 4-30))
+    screen.blit(sText, (w // 2 - sText.get_width()//2, h // 4))
+    screen.blit(topText, (w // 2 - topText.get_width()//2, h // 4+30))
+    
+    cnt = 1
+    for i in tScores:
+        tsText = font.render("%d. %2d"%(cnt, i), True, BLACK)
+        screen.blit(tsText, (w // 2 - tsText.get_width()//2, h // 4+()))
+    pg.display.update()
 
-        results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
-      
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
-                if enemy.collide(player.pos):
-                    enemy = Enemy()
-                    score += 1
-        else:
-            pass
-                    
-        if remaining <= 0:
-            run = False
-            game_over_text = font.render("Game Over! Final Score: " + str(score), True, (255, 255, 255))
-            screen.blit(game_over_text, (w // 2 - 10, h // 2))
- 
-        pg.display.update()
+    press = False
+    while not press:
+        event = pg.event.wait()            
+        if event.type == pg.KEYDOWN and event.key == pg.K_q:
+            q, press = True, True
+        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            press = True
+            
+    if q:
+        break
 
-pg.quit()
+    player = Player()
+    enemy = Enemy()
+
+    score = 0
+    time = 5
+
+    mpHands = mp.solutions.hands
+    cap = cv2.VideoCapture(0)
+
+    with mpHands.Hands(
+        model_complexity=0,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
+        
+        start = pg.time.get_ticks()
+        run = True
+        
+        while run:
+            
+            screen.fill((255,255,255))
+            
+            player.draw()
+            enemy.draw()
+            
+            remaining = time - (pg.time.get_ticks() - start) // 1000
+            
+            screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
+            screen.blit(font.render("Time Remaining: " + str(remaining), True, BLACK), (10, 40))
+
+            results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
+        
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
+                    if enemy.collide(player.pos):
+                        enemy = Enemy()
+                        score += 1
+            else:
+                pass
+                        
+            if remaining <= 0:
+                run = False
+                screen.fill((255,255,255))
+                gText = font.render("Game Over! Final Score: " + str(score), True, BLACK)
+                lText = font.render("Press <SPACE> to restart", True, BLACK)
+                screen.blit(lText, (w // 2 - lText.get_width()//2, h // 2))
+                screen.blit(gText, (w // 2 - gText.get_width()//2, h // 2+30))
+                
+            pg.display.update()
+            
+    press = False
+    while not press:
+        event = pg.event.wait()            
+        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            press = True
