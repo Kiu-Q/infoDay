@@ -9,6 +9,7 @@ pg.init()
 w, h = pg.display.Info().current_w, pg.display.Info().current_h
 screen = pg.display.set_mode((w-10,h-50))
 amd = -10
+BLACK = (0, 0, 0)
 
 pg.display.set_caption("Ho Fung College Info Day Shooting Game")
 
@@ -30,7 +31,7 @@ class Player:
 
 class Enemy:
     def __init__(self):
-        self.pos = [random.randint(w/10, w-w/10), random.randint(h/10, h-h/10)]
+        self.pos = [random.randint(w/5, w-w/10), random.randint(h/5, h-h/10)]
         self.rect = target_image.get_rect()
         self.rect.center = self.pos
         
@@ -59,7 +60,7 @@ with mpHands.Hands(
     
     while run:
         
-        screen.fill((0,0,0))
+        screen.fill((255,255,255))
         
         player.draw()
         enemy.draw()
@@ -67,8 +68,8 @@ with mpHands.Hands(
         remaining = time - (pg.time.get_ticks() - start) // 1000
         font = pg.font.SysFont("Arial", 30)
         
-        screen.blit(font.render("Score: " + str(score), True, (255,255,255)), (10, 10))
-        screen.blit(font.render("Time Remaining: " + str(remaining), True, (255,255,255)), (10, 40))
+        screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
+        screen.blit(font.render("Time Remaining: " + str(remaining), True, BLACK), (10, 40))
 
         results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
       
@@ -78,6 +79,8 @@ with mpHands.Hands(
                 if enemy.collide(player.pos):
                     enemy = Enemy()
                     score += 1
+        else:
+            pass
                     
         if remaining <= 0:
             run = False
