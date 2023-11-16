@@ -8,7 +8,7 @@ pg.init()
 
 w, h = pg.display.Info().current_w-30, pg.display.Info().current_h-100
 screen = pg.display.set_mode((w,h))
-amd = -10
+amd = -50
 BLACK = (0, 0, 0)
 
 pg.display.set_caption("Ho Fung College Info Day Shooting Game")
