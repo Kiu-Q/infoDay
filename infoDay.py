@@ -15,6 +15,7 @@ pg.display.set_caption("Ho Fung College Info Day Shooting Game")
 
 player_image = pg.transform.scale(pg.image.load("player.png"), (w//5, w//5))
 target_image = pg.transform.scale(pg.image.load("target.png"), (w//10, w//10))
+bg_image = pg.transform.scale(pg.image.load("bg.png"), (w+30, h+100))
 
 class Player:
     def __init__(self):
@@ -47,7 +48,7 @@ while not q:
     with shelve.open("file")  as d:
         tScores = d['tScore']
         
-    screen.fill((255,255,255))
+    screen.blit(bg_image, (0,0))
     font = pg.font.SysFont("Arial", 30)     
     
     tText = font.render("HFC Info Day Hand Detect Shooting Game ", True, BLACK)
