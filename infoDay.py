@@ -11,7 +11,7 @@ screen = pg.display.set_mode((w,h))
 amd = -10
 BLACK = (0, 0, 0)
 
-pg.display.set_caption("Ho Fung College Info Day Shooting Game")
+pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cookies")
 
 player_image = pg.transform.scale(pg.image.load("player.png"), (w//5, w//5))
 target_image = pg.transform.scale(pg.image.load("target.png"), (w//10, w//10))
@@ -51,7 +51,7 @@ while not q:
     screen.blit(bg_image, (0,0))
     font = pg.font.SysFont("Arial", 30)     
     
-    tText = font.render("HFC Info Day Hand Detect Shooting Game ", True, BLACK)
+    tText = font.render("HFC Info Day Hand Detect Shooting Game - Christmas Cookies", True, BLACK)
     sText = font.render("Press <SPACE> to start", True, BLACK)
     topText = font.render("Top 5 Scores: ", True, BLACK)
     screen.blit(tText, (w // 2 - tText.get_width()//2, h // 4-30))
