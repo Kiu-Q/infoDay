@@ -13,9 +13,11 @@ BLACK = (0, 0, 0)
 
 pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cookies")
 
-player_image = pg.transform.scale(pg.image.load("player.png"), (w//5, w//5))
-target_image = pg.transform.scale(pg.image.load("target.png"), (w//10, w//10))
-bg_image = pg.transform.scale(pg.image.load("bg.png"), (w+30, h+100))
+file = "src/file"
+player_image = pg.transform.scale(pg.image.load("assets/player.png"), (w//5, w//5))
+target_image = pg.transform.scale(pg.image.load("assets/enemy/target.png"), (w//10, w//10))
+bg_image = pg.transform.scale(pg.image.load("assets/bg/1.png"), (w+30, h+100))
+bg2_image = pg.transform.scale(pg.image.load("assets/bg/2.png"), (w+30, h+100))
 
 class Player:
     def __init__(self):
@@ -45,7 +47,7 @@ class Enemy:
 q = False
 while not q:
     
-    with shelve.open("file")  as d:
+    with shelve.open(file) as d:
         tScores = d['tScore']
         
     screen.blit(bg_image, (0,0))
@@ -54,14 +56,14 @@ while not q:
     tText = font.render("HFC Info Day Hand Detect Shooting Game - Christmas Cookies", True, BLACK)
     sText = font.render("Press <SPACE> to start", True, BLACK)
     topText = font.render("Top 5 Scores: ", True, BLACK)
-    screen.blit(tText, (w // 2 - tText.get_width()//2, h // 4-30))
-    screen.blit(sText, (w // 2 - sText.get_width()//2, h // 4))
-    screen.blit(topText, (w // 2 - topText.get_width()//2, h // 4+30))
+    screen.blit(tText, (w // 2 - tText.get_width()//2, h // 3))
+    screen.blit(sText, (w // 2 - sText.get_width()//2, h // 3+30))
+    screen.blit(topText, (w // 2 - topText.get_width()//2, h // 3+60))
     
     cnt = 1
     for i in tScores:
         tsText = font.render("%d.%3d"%(cnt, i), True, BLACK)
-        screen.blit(tsText, (w // 2 - tsText.get_width()//2, h // 4+(30+30*cnt)))
+        screen.blit(tsText, (w // 2 - tsText.get_width()//2, h // 3+(60+30*cnt)))
         cnt += 1   
     pg.display.update()
 
@@ -130,7 +132,7 @@ while not q:
         tScores.append(score)
         tScores.sort(reverse=True)
         tScores.pop()
-        with shelve.open("file")  as d:
+        with shelve.open(file)  as d:
             d['tScore'] = tScores
             d.close()
         
