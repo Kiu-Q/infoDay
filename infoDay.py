@@ -18,6 +18,9 @@ player_image = pg.transform.scale(pg.image.load("assets/player.png"), (w//5, w//
 target_image = pg.transform.scale(pg.image.load("assets/enemy/target.png"), (w//10, w//10))
 bg_image = pg.transform.scale(pg.image.load("assets/bg/1.png"), (w+30, h+100))
 bg2_image = pg.transform.scale(pg.image.load("assets/bg/2.png"), (w+30, h+100))
+enemys = []
+for i in range(13):
+    enemys.append(pg.transform.scale(pg.image.load("assets/enemy/%d.png"%i), (w//10, w//10)))
 
 class Player:
     def __init__(self):
@@ -34,12 +37,13 @@ class Player:
 
 class Enemy:
     def __init__(self):
+        self.pic = enemys[random.randint(0, 12)]
         self.pos = [random.randint(w//5, w-w//10), random.randint(h//5, h-h//10)]
-        self.rect = target_image.get_rect()
+        self.rect = self.pic.get_rect()
         self.rect.center = self.pos
         
     def draw(self):
-        screen.blit(target_image, self.rect)
+        screen.blit(self.pic, self.rect)
         
     def collide(self, pos):
         return self.rect.collidepoint(pos)
@@ -94,10 +98,9 @@ while not q:
         
         start = pg.time.get_ticks()
         run = True
-        
         while run:
             
-            screen.fill((255,255,255))
+            screen.blit(bg2_image, (0,0))
             
             player.draw()
             enemy.draw()
