@@ -26,7 +26,7 @@ enemys = [pg.transform.scale(pg.image.load("assets/enemy/%d.png"%i), (w//10, w//
 loads = [pg.transform.scale(pg.image.load("assets/load/%d.png"%i), (w//2, w//2)) for i in range(16)]
 gMans = [pg.transform.scale(pg.image.load("assets/gMan/%d.png"%i), (w//10, w//10*pg.image.load("assets/gMan/%d.png"%i).get_height()//pg.image.load("assets/gMan/%d.png"%i).get_width())) for i in range(4)]
 loadings = [pg.transform.scale(pg.image.load("assets/loading/%d.png"%i), (w//5, w//5*pg.image.load("assets/loading/%d.png"%i).get_height()//pg.image.load("assets/loading/%d.png"%i).get_width())) for i in range(4)]
-
+crackSound = pg.mixer.Sound("assets/sound.mp3")
 class Player:
     def __init__(self):
         self.pos = [w//2, h//2]
@@ -69,7 +69,7 @@ def Loading(limit = 50):
         pg.display.update()
         cnt += 1
         time.sleep(0.01)
-    
+            
 q = False
 while not q:
     
@@ -133,6 +133,7 @@ while not q:
                 for hand_landmarks in results.multi_hand_landmarks:
                     player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
                     if enemy.collide(player.pos):
+                        crackSound.play()
                         enemy = Enemy()
                         score += 1
             else:
