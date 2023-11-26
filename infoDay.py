@@ -5,15 +5,16 @@ import cv2
 import shelve
 import time
 
+AMD = 0
+LIMIT = 30
+
 pg.init()
 
 w, h = pg.display.Info().current_w-30, pg.display.Info().current_h-100
 screen = pg.display.set_mode((w,h))
-amd = 0
-limit = 30
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-font = pg.font.SysFont("Arial", 30)     
+font = pg.font.SysFont("Arial", 30)
 
 pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cookies")
 
@@ -100,7 +101,7 @@ while not q:
     enemy = Enemy()
 
     score = 0
-    times = limit
+    times = LIMIT
 
     mpHands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
@@ -131,7 +132,7 @@ while not q:
         
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
-                    player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
+                    player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+AMD])
                     if enemy.collide(player.pos):
                         carck.play()
                         enemy = Enemy()
