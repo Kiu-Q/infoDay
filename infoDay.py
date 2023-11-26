@@ -6,7 +6,8 @@ import shelve
 import time
 
 AMD = 0
-LIMIT = 30
+LIMIT = 5
+SCORE = 5
 
 pg.init()
 
@@ -60,7 +61,7 @@ def printText(text, color = BLACK, add = 0):
         screen.blit(temp, (w // 2 - temp.get_width()//2, h // 3 +(text.index(i)+1)*30+add))
         pg.display.update()
         
-def Loading(limit = 50):
+def Loading(limit = 20):
     cnt = 0
     while cnt<=limit:
         screen.fill(WHITE)
@@ -81,16 +82,15 @@ while not q:
     printText(["HFC Info Day Hand Detect Shooting Game - Christmas Cookies",
              "Welcome, press <SPACE> to start", 
              "Top 5 Scores: "])
-    printText(["%d.%3d"%(i+1, tScores[i]) for i in range(len(tScores))], add = 90)
+    printText(["%d. Name: %s Score: %3d"%(i+1, tScores[i][0], tScores[i][1]) for i in range(len(tScores))], add = 90)
     
-
-    press = False
-    while not press:
-        event = pg.event.wait()            
+    while True:
+        event = pg.event.wait()
         if event.type == pg.KEYDOWN and event.key == pg.K_q:
-            q, press = True, True
-        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            press = True
+            q = True
+            break
+        elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            break
             
     if q:
         break
@@ -100,7 +100,7 @@ while not q:
     player = Player()
     enemy = Enemy()
 
-    score = 0
+    score = SCORE
     times = LIMIT
 
     mpHands = mp.solutions.hands
@@ -145,25 +145,35 @@ while not q:
                                 
             pg.display.update()
     
-    Loading(20)
+    Loading()
     screen.blit(bgs[2], (0,0))
     
-    if score > min(tScores):
+    if score > tScores[4][1]:
+        tScores.append(["", score])
+        while True:
+            screen.blit(bgs[2], (0,0))
+            printText(["Time's Up! Final Score: %d"%score, 
+                       "Congratulations, your score gets into Top 5 Scores!", 
+                       "Please enter your name (At most 10 charachters) to have a cool record",
+                        "Name: %s |"%tScores[5][0]], WHITE, 60)
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                break
+            elif event.type == pg.KEYDOWN and event.key == pg.K_BACKSPACE:
+                tScores[5][0] = tScores[5][0][:-1]
+            elif event.type == pg.KEYDOWN and len(tScores[5][0]) < 10:
+                tScores[5][0] += event.unicode
+            event = pg.event.wait()
+
         with shelve.open(file) as d:
-            tScores.append(score)
-            tScores.sort(reverse=True)
+            tScores.sort(reverse=True, key=lambda x: x[1])
             tScores.pop()
             d['tScore'] = tScores
-        printText(["Time's Up! Final Score: %d"%score, 
-                   "Congratulations, your score gets into Top 5 Scores!", 
-                   "Press <SPACE> to view the new Top 5 Scores"], WHITE, 60)
+
     else:
         printText(["Time's Up! Final Score: %d"%score,
                    "Press <SPACE> to restart"], WHITE, 60)
-
-    press = False
-    while not press:
-        event = pg.event.wait()            
-        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            press = True
-            Loading(20)
+        while True:
+            event = pg.event.wait()            
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                break
+    Loading()
