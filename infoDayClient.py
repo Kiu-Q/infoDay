@@ -2,12 +2,12 @@ import pygame as pg
 import random
 import mediapipe as mp
 import cv2
-import shelve
 import time
+import serial
 
 AMD = 0
-LIMIT = 5
-SCORE = 5
+LIMIT = 45
+PORT = "COM5"
 
 pg.init()
 
@@ -17,7 +17,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 font = pg.font.SysFont("Arial", 30)
 
-pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cookies")
+pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cookies DUAL PLAYER")
 
 file = "src/file"
 
@@ -45,7 +45,7 @@ class Player:
 class Enemy:
     def __init__(self):
         self.pic = enemys[random.randint(0, 12)]
-        self.pos = [random.randint(w//5, w-w//10), random.randint(h//5, h-h//10)]
+        self.pos = pos[score]
         self.rect = self.pic.get_rect()
         self.rect.center = self.pos
         
@@ -61,7 +61,7 @@ def printText(text, color = BLACK, add = 0):
         screen.blit(temp, (w // 2 - temp.get_width()//2, h // 3 +(text.index(i)+1)*30+add))
         pg.display.update()
         
-def Loading(limit = 20):
+def Loading(limit = 50):
     cnt = 0
     while cnt<=limit:
         screen.fill(WHITE)
@@ -71,40 +71,53 @@ def Loading(limit = 20):
         pg.display.update()
         cnt += 1
         time.sleep(0.01)
-            
+       
+connect = False
+while not connect:
+    try:
+        ser = serial.Serial(PORT, 9600)
+        connect = True
+    except Exception as ex:
+        connect = False
+    time.sleep(0.1)
+
 q = False
 while not q:
-    
-    with shelve.open(file) as d:
-        tScores = d['tScore']
-        
-    screen.blit(bgs[0], (0,0))
-    printText(["HFC Info Day Hand Detect Shooting Game - Christmas Cookies",
-             "Welcome, press <SPACE> to start", 
-             "Top 5 Scores: "])
-    printText(["%d. Name: %s Score: %3d"%(i+1, tScores[i][0], tScores[i][1]) for i in range(len(tScores))], add = 90)
-    
-    while True:
-        event = pg.event.wait()
-        if event.type == pg.KEYDOWN and event.key == pg.K_q:
-            q = True
-            break
-        elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            break
             
+    screen.blit(bgs[0], (0,0))
+    printText(["HFC Info Day Hand Detect Shooting Game - Christmas Cookies DUAL PLAYER",
+               "Welcome, press <SPACE> to start", 
+               "Connetion Status:", 
+               "Connected"])
+            
+    press = False
+    while not press:
+        event = pg.event.wait()            
+        if event.type == pg.KEYDOWN and event.key == pg.K_q:
+            q, press = True, True
+        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            press = True
+            #ser.write("s")
+
     if q:
         break
 
-    Loading()
-
-    player = Player()
-    enemy = Enemy()
-
-    score = SCORE
+    Loading(20)
+    
+    score = 0
     times = LIMIT
+    pos = [(random.randint(w//5, w-w//10), random.randint(h//5, h-h//10)) for i in range(LIMIT*2)]
 
     mpHands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
+    
+    for i in pos:
+        for j in i:
+            #ser.write(j)
+            print(str(j))
+    
+    player = Player()
+    enemy = Enemy()
 
     with mpHands.Hands(
         model_complexity=0,
@@ -114,7 +127,7 @@ while not q:
         start = pg.time.get_ticks()
         run = True
               
-        Loading()
+        Loading(20)
                 
         while run:
             screen.fill(WHITE)
@@ -139,41 +152,43 @@ while not q:
                         score += 1
             else:
                 pass
-                        
+
             if remaining <= 0:
                 run = False
-                                
+
             pg.display.update()
     
-    Loading()
+    Loading(20)
+    
+    resopnse = False
+    while not resopnse:
+        try:
+            #cScore = int(ser.read())
+            cScore = 20
+            resopnse = True
+        except Exception as ex:
+            cScore = 0
+        time.sleep(0.1)
+
+    if score >= cScore:
+        win = True
+        #ser.write("lose")
+        print("lose")
+    else:
+        win = False
+        #ser.write("win")
+        print("win")
+        
+    Loading(20)
+    
     screen.blit(bgs[2], (0,0))
     
-    if score > tScores[4][1]:
-        tScores.append(["", score])
-        while True:
-            screen.blit(bgs[2], (0,0))
-            printText(["Time's Up! Final Score: %d"%score, 
-                       "Congratulations, your score gets into Top 5 Scores!", 
-                       "Please enter your name (At most 10 charachters) to have a cool record",
-                        "Name: %s |"%tScores[5][0]], WHITE, 60)
-            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
-                break
-            elif event.type == pg.KEYDOWN and event.key == pg.K_BACKSPACE:
-                tScores[5][0] = tScores[5][0][:-1]
-            elif event.type == pg.KEYDOWN and len(tScores[5][0]) < 10:
-                tScores[5][0] += event.unicode
-            event = pg.event.wait()
+    printText([("Time's Up! Final Score: %d, you "%score) + ("win!" if win else "lose!"),
+               "Press <SPACE> to restart"], WHITE, 60)
 
-        with shelve.open(file) as d:
-            tScores.sort(reverse=True, key=lambda x: x[1])
-            tScores.pop()
-            d['tScore'] = tScores
-
-    else:
-        printText(["Time's Up! Final Score: %d"%score,
-                   "Press <SPACE> to restart"], WHITE, 60)
-        while True:
-            event = pg.event.wait()            
-            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                break
-    Loading()
+    press = False
+    while not press:
+        event = pg.event.wait()            
+        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            press = True
+            Loading()
