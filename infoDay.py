@@ -5,7 +5,6 @@ import cv2
 import shelve
 import time
 
-
 pg.init()
 
 w, h = pg.display.Info().current_w-30, pg.display.Info().current_h-100
@@ -20,12 +19,13 @@ pg.display.set_caption("Ho Fung College Info Day Shooting Game - Christmas Cooki
 
 file = "src/file"
 
+player_image = pg.transform.scale(pg.image.load("assets/player.png"), (w//5, w//5))
 bgs = [pg.transform.scale(pg.image.load("assets/bg/%d.png"%i), (w+30, h+100)) for i in range(3)]
 enemys = [pg.transform.scale(pg.image.load("assets/enemy/%d.png"%i), (w//10, w//10*pg.image.load("assets/enemy/%d.png"%i).get_height()//pg.image.load("assets/enemy/%d.png"%i).get_width())) for i in range(13)]
 loads = [pg.transform.scale(pg.image.load("assets/load/%d.png"%i), (w//2, w//2)) for i in range(16)]
 gMans = [pg.transform.scale(pg.image.load("assets/gMan/%d.png"%i), (w//10, w//10*pg.image.load("assets/gMan/%d.png"%i).get_height()//pg.image.load("assets/gMan/%d.png"%i).get_width())) for i in range(4)]
 loadings = [pg.transform.scale(pg.image.load("assets/loading/%d.png"%i), (w//5, w//5*pg.image.load("assets/loading/%d.png"%i).get_height()//pg.image.load("assets/loading/%d.png"%i).get_width())) for i in range(4)]
-pg.mixer.music.load("assets/sound.ogg")
+carck = pg.mixer.Sound(file="assets/sound.wav")
 
 class Player:
     def __init__(self):
@@ -133,7 +133,7 @@ while not q:
                 for hand_landmarks in results.multi_hand_landmarks:
                     player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+amd])
                     if enemy.collide(player.pos):
-                        crackSound.play()
+                        carck.play()
                         enemy = Enemy()
                         score += 1
             else:
