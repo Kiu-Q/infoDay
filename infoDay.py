@@ -5,9 +5,9 @@ import cv2
 import shelve
 import time
 
-AMD = 0
-LIMIT = 5
-SCORE = 5
+AMD = -20
+LIMIT = 30
+SCORE = 0
 
 pg.init()
 
@@ -82,7 +82,13 @@ while not q:
     printText(["HFC Info Day Hand Detect Shooting Game - Christmas Cookies",
              "Welcome, press <SPACE> to start", 
              "Top 5 Scores: "])
-    printText(["%d. Name: %s Score: %3d"%(i+1, tScores[i][0], tScores[i][1]) for i in range(len(tScores))], add = 90)
+    rank= ["1st", "2nd", "3rd", "4th", "5th"]
+    for i in range(5):
+        screen.blit(font.render(rank[i], True, BLACK), (w//2-200, h//3+120+30*i))
+        screen.blit(font.render(tScores[i][0].strip(), True, BLACK), (w//2-100, h//3+120+30*i))
+        screen.blit(font.render("Score: %d"%tScores[i][1], True, BLACK), (w//2+100, h//3+120+30*i)) 
+    pg.display.update()
+    #printText(["%d. Name: %s Score: %3d"%(i+1, tScores[i][0], tScores[i][1]) for i in range(len(tScores))], add = 90)
     
     while True:
         event = pg.event.wait()
