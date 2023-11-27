@@ -5,7 +5,7 @@ import cv2
 import shelve
 import time
 
-AMD = -20
+AMD = 30
 LIMIT = 30
 SCORE = 0
 
@@ -88,7 +88,6 @@ while not q:
         screen.blit(font.render(tScores[i][0].strip(), True, BLACK), (w//2-100, h//3+120+30*i))
         screen.blit(font.render("Score: %d"%tScores[i][1], True, BLACK), (w//2+100, h//3+120+30*i)) 
     pg.display.update()
-    #printText(["%d. Name: %s Score: %3d"%(i+1, tScores[i][0], tScores[i][1]) for i in range(len(tScores))], add = 90)
     
     while True:
         event = pg.event.wait()
@@ -141,6 +140,7 @@ while not q:
                     player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+AMD])
                     if enemy.collide(player.pos):
                         carck.play()
+                        del enemy
                         enemy = Enemy()
                         score += 1
             else:
@@ -150,7 +150,9 @@ while not q:
                 run = False
                                 
             pg.display.update()
-    
+        
+        del player, enemy
+
     Loading()
     screen.blit(bgs[2], (0,0))
     

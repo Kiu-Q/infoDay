@@ -61,7 +61,7 @@ def printText(text, color = BLACK, add = 0):
         screen.blit(temp, (w // 2 - temp.get_width()//2, h // 3 +(text.index(i)+1)*30+add))
         pg.display.update()
         
-def Loading(limit = 50):
+def Loading(limit = 20):
     cnt = 0
     while cnt<=limit:
         screen.fill(WHITE)
@@ -88,25 +88,26 @@ while not q:
     printText(["HFC Info Day Hand Detect Shooting Game - Christmas Cookies DUAL PLAYER",
                "Welcome, press <SPACE> to start", 
                "Connetion Status:", 
-               "Connected"])
+               "Connected - Wait for host..."])
             
     press = False
-    while not press:
+    while True:
         event = pg.event.wait()            
         if event.type == pg.KEYDOWN and event.key == pg.K_q:
-            q, press = True, True
-        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            press = True
-            #ser.write("s")
+            q = True
+            break
+        if ser.read() == "s":
+            break
+        time.sleep(0.1)
 
     if q:
         break
 
-    Loading(20)
+    Loading()
     
     score = 0
     times = LIMIT
-    pos = [(random.randint(w//5, w-w//10), random.randint(h//5, h-h//10)) for i in range(LIMIT*2)]
+    pos = []
 
     mpHands = mp.solutions.hands
     cap = cv2.VideoCapture(0)
