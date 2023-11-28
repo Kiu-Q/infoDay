@@ -5,7 +5,7 @@ import cv2
 import shelve
 import time
 
-AMD = 30
+AMD = 0
 LIMIT = 30
 SCORE = 0
 

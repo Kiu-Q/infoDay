@@ -28,14 +28,11 @@ The program utilizes various techniques and technologies, including:
 
 ## Installation
 To run the program, follow these steps:
-1. Add Python (version 3.10) to PATH (Detailed explainations in <a href="hhttps://realpython.com/add-python-to-path/">Realpython</a>)
-    ```Shell
-    set PATH=%PATH%;"D:\python\python.exe"
-    ```
-2. Run the `infoDay.py` file in CMD using Python:
-    ```Shell
-    python infoDay.py
-    ```
+1. Cpoy the `E:\python` and `E:\school` folder to `C:\Users\student\Desktop`
+2. Open `infoDay.py` with `Thonny`
+3. In `Thonny`, press `run` > `Configure interpreter...`
+4. In `Details` > `Python executable`, browse path to `C:\Users\student\Desktop\python\python.exe` and press `OK`
+5. Press `Ctrl+T` to run current script in terminal
 
 ## Details
 
