@@ -156,7 +156,12 @@ while not q:
             
             screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
 
-            results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
+            
+            try:
+                results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
+            except Exception as e:
+                print(e)
+                time.sleep(0.001)
         
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
@@ -206,7 +211,7 @@ while not q:
             d['tScore'] = tScores
 
     else:
-        printText(["Time's Up! Final Score: %d"%score,
+        printText(["Time's Up! Final Score: %d"%score if score > 30 else "Time's Up! Final Score %d higher than 30!"%score,
                    "Press <SPACE> to restart"], WHITE, 60)
         while True:
             event = pg.event.wait()            
