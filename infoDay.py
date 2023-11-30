@@ -155,27 +155,19 @@ while not q:
                     played = True
             
             screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
-
             
-            try:
-                results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
-            except Exception as e:
-                print(e, "1")
-                time.sleep(0.001)
+            results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
         
             try:
-                if results.multi_hand_landmarks:
-                    for hand_landmarks in results.multi_hand_landmarks:
-                        player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+AMD])
-                        if enemy.collide(player.pos):
-                            carck.play()
-                            del enemy
-                            enemy = Enemy()
-                            score += 1
-                #else:
-                    #time.sleep(0.001)
+                for hand_landmarks in results.multi_hand_landmarks:
+                    player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+AMD])
+                    if enemy.collide(player.pos):
+                        carck.play()
+                        del enemy
+                        enemy = Enemy()
+                        score += 1
             except Exception as e:
-                print(e, "2")
+                print(e)
                 time.sleep(0.001)
 
             if remaining <= 0:
