@@ -157,8 +157,7 @@ while not q:
             screen.blit(font.render("Score: " + str(score), True, BLACK), (10, 10))
             
             results = hands.process(cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2RGB))
-        
-            try:
+            if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
                     player.update([w-(hand_landmarks.landmark[7].x * w), hand_landmarks.landmark[7].y * h+AMD])
                     if enemy.collide(player.pos):
@@ -166,9 +165,8 @@ while not q:
                         del enemy
                         enemy = Enemy()
                         score += 1
-            except Exception as e:
-                print(e)
-                time.sleep(0.001)
+            else:
+                time.sleep(0.01)
 
             if remaining <= 0:
                 run = False
@@ -207,7 +205,7 @@ while not q:
             d['tScore'] = tScores
 
     else:
-        printText(["Time's Up! Final Score: %d"%score if score > 30 else "Time's Up! Final Score %d higher than 30!"%score,
+        printText(["Time's Up! Final Score: %d"%score if score < 30 else "Time's Up! Final Score %d higher than 30!"%score,
                    "Press <SPACE> to restart"], WHITE, 60)
         while True:
             event = pg.event.wait()            
